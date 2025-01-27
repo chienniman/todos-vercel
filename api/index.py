@@ -16,8 +16,10 @@ def tid(id): return f'todo-{id}'
 def __ft__(self:Todo):
     show = AX(self.title, f'/todos/{self.id}', 'current-todo')
     edit = AX('edit',     f'/edit/{self.id}' , 'current-todo')
+    delete_btn = Button('delete', hx_delete=f'/todos/{self.id}',
+                        target_id=tid(self.id), hx_swap="outerHTML")
     dt = ' ✅' if self.done else ''
-    cts = (dt, show, ' | ', edit, Hidden(id="id", value=self.id), Hidden(id="priority", value="0"))
+    cts = (dt, show, ' | ', edit, ' | ', delete_btn, Hidden(id="id", value=self.id), Hidden(id="priority", value="0"))
     return Li(*cts, id=f'todo-{self.id}')
 
 def mk_input(**kw): return Input(id="new-title", name="title", placeholder="New Todo", **kw)
