@@ -49,6 +49,7 @@ button:hover {
 }
 
 #todo-list li {
+    width:100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
