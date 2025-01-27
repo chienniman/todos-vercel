@@ -106,7 +106,8 @@ def __ft__(self: Todo):
     delete_btn = Button('delete', cls='delete', hx_delete=f'/todos/{self.id}',
                         target_id=tid(self.id), hx_swap="outerHTML")
     dt = ' ✅' if self.done else ''
-    cts = (dt, show, ' | ', edit, ' | ', delete_btn, Hidden(id="id", value=self.id), Hidden(id="priority", value="0"))
+    cts = [Div(dt), Div(show), Div(edit), Div(delete_btn),
+           Hidden(id="id", value=self.id), Hidden(id="priority", value="0")]
     return Li(*cts, id=f'todo-{self.id}')
 
 # Function to create input field
@@ -115,7 +116,7 @@ def mk_input(**kw): return Input(id="new-title", name="title", placeholder="New 
 # Route for homepage
 @rt("/")
 async def get():
-    add = Form(Group(mk_input(), Button("Add", cls="add")),
+    add = Form(Group(mk_input(required=True), Button("Add", cls="add")),
                hx_post="/", target_id='todo-list', hx_swap="beforeend")
     items = sorted(todos(), key=lambda o: o.priority)
     frm = Form(*items, id='todo-list', cls='sortable', hx_post="/reorder", hx_trigger="end")
@@ -139,7 +140,10 @@ async def delete(id: str):
 
 # Route to add a new todo
 @rt("/")
-async def post(todo: Todo): return todos.insert(todo), mk_input(hx_swap_oob='true')
+async def post(todo: Todo):
+    if not todo.title:
+        return mk_input(hx_swap_oob='true')
+    return todos.insert(todo), mk_input(hx_swap_oob='true')
 
 # Route to edit todo
 @rt("/edit/{id}")
